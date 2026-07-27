@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  /* Konfigurasi Warna */
+  --color-brand-primary: #064e3b;
+  --color-brand-secondary: #10b981;
+  --color-brand-accent: #f59e0b;
+  --color-brand-dark: #1f2937;
+  --color-brand-light: #f0fdf4;
+}
+@layer utilities {
+  .text-gradient-primary {
+    /* Menggunakan @apply dengan warna yang sudah didaftarkan di @theme sebelumnya */
+    @apply bg-gradient-to-r from-brand-secondary to-brand-primary bg-clip-text text-transparent;
+    
+  }
+  .text-gradient-accent {
+    @apply bg-gradient-to-r from-yellow-400 to-brand-accent bg-clip-text text-transparent;
+  }
+}
+
+/* --- KODE ANIMASI MURNI (Di luar @layer agar tidak dihapus Tailwind) --- */
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Jeda waktu animasi */
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+
+/* Keyframes untuk pergerakan dari bawah ke atas */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  /* Membuat tekstur pola titik-titik kecil */
+  .bg-texture-dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1.5px, transparent 1.5px);
+    background-size: 24px 24px; /* Jarak antar titik */
+  }
+}
