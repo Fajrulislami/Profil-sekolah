@@ -1,12 +1,12 @@
-import HeroSD from "./components/HeroSD";
-import ProfilSD from "./components/ProfilSD";
-import VisiMisiSD from "./components/VisiMisiSD";
-import ProgramUnggulan from "./components/ProgramUnggulan";
-import KurikulumSD from "./components/KurikulumSD";
-import MetodePembelajaran from "./components/MetodePembelajaran";
-import StrukturOrganisasi from "./components/StrukturOrganisasi"; 
-import KegiatanSD from "./components/KegiatanSD";
-import FasilitasSD from "./components/FasilitasSD";
+import HeroSD from "@/components/pages/jenjang/sd/HeroSD";
+import ProfilSD from "@/components/pages/jenjang/sd/ProfilSD";
+import VisiMisiSD from "@/components/pages/jenjang/sd/VisiMisiSD";
+import ProgramUnggulan from "@/components/pages/jenjang/sd/ProgramUnggulan";
+import KurikulumSD from "@/components/pages/jenjang/sd/KurikulumSD";
+import MetodePembelajaran from "@/components/pages/jenjang/sd/MetodePembelajaran";
+import StrukturOrganisasi from "@/components/pages/jenjang/sd/StrukturOrganisasi"; 
+import KegiatanSD from "@/components/pages/jenjang/sd/KegiatanSD";
+import FasilitasSD from "@/components/pages/jenjang/sd/FasilitasSD";
 
 
 export default function JenjangSD() {

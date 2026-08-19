@@ -1,10 +1,10 @@
-import HeroPesantren from "./components/HeroPesantren";
-import ProfilPesantren from "./components/ProfilPesantren";
-import VisiMisiPesantren from "./components/VisiMisiPesantren";
-import ProgramUnggulan from "./components/ProgramUnggulan";
-import KurikulumBelajar from "./components/KurikulumBelajar";
-import MetodePembelajaran from "./components/MetodePembelajaran";
-import KegiatanPesantren from "./components/KegiatanPesantren";
+import HeroPesantren from "@/components/pages/jenjang/pesantren/HeroPesantren";
+import ProfilPesantren from "@/components/pages/jenjang/pesantren/ProfilPesantren";
+import VisiMisiPesantren from "@/components/pages/jenjang/pesantren/VisiMisiPesantren";
+import ProgramUnggulan from "@/components/pages/jenjang/pesantren/ProgramUnggulan";
+import KurikulumBelajar from "@/components/pages/jenjang/pesantren/KurikulumBelajar";
+import MetodePembelajaran from "@/components/pages/jenjang/pesantren/MetodePembelajaran";
+import KegiatanPesantren from "@/components/pages/jenjang/pesantren/KegiatanPesantren";
 
 
 export default function JenjangPesantren() {

@@ -1,5 +1,5 @@
-import FasilitasHero from "@/components/sections/FasilitasHero";
-import FasilitasCategory from "@/components/sections/FasilitasCategory";
+import FasilitasHero from "@/components/pages/fasilitas/FasilitasHero";
+import FasilitasCategory from "@/components/pages/fasilitas/FasilitasCategory";
 
 // import Navbar from "@/components/Navbar";
 // import Footer from "@/components/Footer";

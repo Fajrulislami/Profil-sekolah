@@ -1,13 +1,12 @@
-// Perhatikan jalur import-nya berubah karena file page.tsx sekarang ada di dalam folder 'tk'
-import HeroTK from "./components/HeroTK";
-import ProfilTK from "./components/ProfilTK";
-import VisiMisiTK from "./components/VisiMisiTK";
-import ProgramUnggulan from "./components/ProgramUnggulan";
-import KurikulumTK from "./components/KurikulumTK";
-import MetodePembelajaran from "./components/MetodePembelajaran";
-import KegiatanTK from "./components/KegiatanTk";
-import GuruTenagaPendidik from "./components/GuruTenagaPendidik";
-import FasilitasTK from "./components/FasilitasTK";
+import HeroTK from "@/components/pages/jenjang/tk/HeroTK";
+import ProfilTK from "@/components/pages/jenjang/tk/ProfilTK";
+import VisiMisiTK from "@/components/pages/jenjang/tk/VisiMisiTK";
+import ProgramUnggulan from "@/components/pages/jenjang/tk/ProgramUnggulan";
+import KurikulumTK from "@/components/pages/jenjang/tk/KurikulumTK";
+import MetodePembelajaran from "@/components/pages/jenjang/tk/MetodePembelajaran";
+import KegiatanTK from "@/components/pages/jenjang/tk/KegiatanTk";
+import GuruTenagaPendidik from "@/components/pages/jenjang/tk/GuruTenagaPendidik";
+import FasilitasTK from "@/components/pages/jenjang/tk/FasilitasTK";
 
 
 export default function JenjangTK() {

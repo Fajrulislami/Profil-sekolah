@@ -1,11 +1,11 @@
-import HeroSection from "@/components/sections/HeroSection";
-import JenjangSection from "@/components/sections/JenjangSection";
-import MottoSection from "@/components/sections/MottoSection";
-import ContactSection from "@/components/sections/ContactSection";
-import ProfilSection from "@/components/sections/ProfilSection";
-import FasilitasSection from "@/components/sections/FasilitasSection";
-import PrestasiSection from "@/components/sections/PrestasiSection";
-import BeritaSection from "@/components/sections/BeritaSection";
+import HeroSection from "@/components/pages/home/HeroSection";
+import JenjangSection from "@/components/pages/home/JenjangSection";
+import MottoSection from "@/components/pages/home/MottoSection";
+import ContactSection from "@/components/pages/home/ContactSection";
+import ProfilSection from "@/components/pages/home/ProfilSection";
+import FasilitasSection from "@/components/pages/home/FasilitasSection";
+import PrestasiSection from "@/components/pages/home/PrestasiSection";
+import BeritaSection from "@/components/pages/home/BeritaSection";
 
 export default function Home() {
   return (

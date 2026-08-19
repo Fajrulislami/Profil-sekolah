@@ -1,12 +1,12 @@
-import HeroSMP from "./components/HeroSMP";
-import ProfilSMP from "./components/ProfilSMP";
-import VisiMisiSMP from "./components/VisiMisiSMP";
-import ProgramUnggulanSMP from "./components/ProgramUnggulanSMP";
-import KurikulumSMP from "./components/KurikulumSMP";
-import MetodePembelajaranSMP from "./components/MetodePembelajaranSMP";
-import KegiatanSMP from "./components/KegiatanSMP";
-import TenagaPendidikSMP from "./components/TenagaPendidikSMP";
-import FasilitasSMP from "./components/FasilitasSMP";
+import HeroSMP from "@/components/pages/jenjang/smp/HeroSMP";
+import ProfilSMP from "@/components/pages/jenjang/smp/ProfilSMP";
+import VisiMisiSMP from "@/components/pages/jenjang/smp/VisiMisiSMP";
+import ProgramUnggulanSMP from "@/components/pages/jenjang/smp/ProgramUnggulanSMP";
+import KurikulumSMP from "@/components/pages/jenjang/smp/KurikulumSMP";
+import MetodePembelajaranSMP from "@/components/pages/jenjang/smp/MetodePembelajaranSMP";
+import KegiatanSMP from "@/components/pages/jenjang/smp/KegiatanSMP";
+import TenagaPendidikSMP from "@/components/pages/jenjang/smp/TenagaPendidikSMP";
+import FasilitasSMP from "@/components/pages/jenjang/smp/FasilitasSMP";
 
 
 
