@@ -85,7 +85,7 @@ export default function KurikulumTK() {
             }`}
           >
             Standar Kualitas <br />
-            <span className="text-emerald-600">Pendidikan Usia Dini.</span>
+            <span className="text-emerald-600">Pendidikan Usia Dini</span>
           </h2>
 
         </div>

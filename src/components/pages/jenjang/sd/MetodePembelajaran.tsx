@@ -97,7 +97,7 @@ export default function MetodePembelajaran() {
           }`}>
             Menghidupkan Suasana Kelas dengan <br className="hidden md:block" />
             <span className="inline-block bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent font-black italic pb-2 pr-4 mt-1">
-              Pendekatan Interaktif.
+              Pendekatan Interaktif
             </span>
           </h2>
         </div>

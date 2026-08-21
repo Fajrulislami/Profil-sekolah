@@ -123,7 +123,7 @@ export default function KegiatanSMP() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.2] mb-5">
             Ragam Kegiatan{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-green-500 to-teal-600">
-              Interaktif & Seru.
+              Interaktif & Seru
             </span>
           </h2>
 

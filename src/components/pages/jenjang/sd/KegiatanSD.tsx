@@ -86,7 +86,7 @@ export default function KegiatanSD() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800 leading-[1.25] tracking-tight">
             Beragam Kegiatan Menyenangkan <br className="hidden sm:block" />
             <span className="inline-block bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent font-black italic pb-1">
-              Di Luar Kelas.
+              Di Luar Kelas
             </span>
           </h2>
           

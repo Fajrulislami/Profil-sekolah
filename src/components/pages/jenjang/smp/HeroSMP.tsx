@@ -40,7 +40,7 @@ export default function HeroSMP() {
             <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold text-slate-800 leading-[1.15] tracking-tight mb-6">
               Membentuk Karakter & <br className="hidden lg:block" />
               <span className="inline-block bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent font-black pb-2">
-                Generasi Mandiri.
+                Generasi Mandiri
               </span>
             </h1>
 

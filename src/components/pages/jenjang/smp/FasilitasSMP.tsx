@@ -99,7 +99,7 @@ export default function FasilitasSMP() {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.2]">
               Infrastruktur Belajar{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-green-500 to-teal-600">
-                Modern & Lengkap.
+                Modern & Lengkap
               </span>
             </h2>
           </div>

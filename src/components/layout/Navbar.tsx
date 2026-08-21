@@ -141,8 +141,8 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <div className="hidden md:block shrink-0">
               <Link href="/ppdb">
-                <button className="relative overflow-hidden bg-black text-white text-[14px] font-semibold py-2.5 px-6 rounded-full group transition-all duration-300 hover:shadow-[0_8px_20px_rgba(0,0,0,0.2)] hover:-translate-y-0.5">
-                  <span className="relative z-10">Hubungi Kami</span>
+                <button className="relative overflow-hidden bg-emerald-600 hover:bg-emerald-500 text-white text-[14px] font-bold py-2.5 px-6 rounded-full group transition-all duration-300 hover:shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5">
+                  <span className="relative z-10">PPDB Online</span>
                   {/* Efek kilauan saat di-hover pada tombol */}
                   <div className="absolute inset-0 h-full w-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:animate-[shine_1s_ease-in-out]"></div>
                 </button>

@@ -108,7 +108,7 @@ export default function KurikulumSD() {
             }`}>
               Pendekatan Belajar <br />
               <span className="inline-block bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent font-black italic pb-2 pr-4 mt-1">
-                Holistik & Terintegrasi.
+                Holistik & Terintegrasi
               </span>
             </h2>
 

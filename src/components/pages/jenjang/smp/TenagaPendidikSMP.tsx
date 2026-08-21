@@ -97,7 +97,7 @@ export default function TenagaPendidikSMP() {
           >
             Dimentori oleh{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500">
-              Pendidik Profesional.
+              Pendidik Profesional
             </span>
           </motion.h2>
 

@@ -46,7 +46,7 @@ export default function FasilitasHero() {
           >
             Ruang Tumbuh <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-yellow-200">
-              Generasi Juara.
+              Generasi Juara
             </span>
           </h1>
           

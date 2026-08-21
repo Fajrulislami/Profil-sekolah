@@ -25,7 +25,7 @@ export default function AboutBriefSection() {
             <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.2] mb-6">
               Membangun Generasi <br />
               <span className="inline-block bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent font-black italic pb-2 pr-4 mt-1">
-                Cerdas & Berkarakter.
+                Cerdas & Berkarakter
               </span>
             </h2>
             
