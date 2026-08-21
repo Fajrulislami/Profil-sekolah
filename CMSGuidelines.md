@@ -170,3 +170,14 @@ Untuk menghindari pembengkakan fitur (*scope creep*) dan menjaga performa websit
 - ❌ **DILARANG** menambahkan sistem e-commerce, pembayaran gateway online, atau toko merchandise (di luar kebutuhan profil sekolah).
 - ❌ **DILARANG** mengubah atau menghapus layout publik yang sudah disetujui tanpa alasan sinkronisasi data CMS.
 - ❌ **DILARANG** menggunakan library eksternal yang terlalu berat yang dapat memperlambat *build time* Next.js.
+
+## 6. Strategi Repo & Mikro‑service (Future‑Ready)
+
+- **Monorepo struktur**: pisahkan UI (`frontend/`) dan API (`backend/`). Kedua folder menjadi workspace npm sehingga satu `npm install` mengelola semua dependensi.
+- **Docker ready**: sediakan `Dockerfile` terpisah di masing‑folder; masing‑service dapat dibangun dan dijalankan secara independen di lingkungan container.
+- **API‑gateway / Service mesh**: bila backend berkembang menjadi banyak layanan, gunakan gateway (Traefik, Nginx, Kong) atau service‑mesh untuk routing, load‑balancing, dan observabilitas.
+- **Versioning API**: beri prefix `/api/v1/…` pada endpoint sehingga perubahan versi tidak memecah klien frontend.
+- **Ekstraksi ke repo terpisah**: bila sebuah layanan (mis. authentication, analytics) menjadi besar, gunakan `git subtree split` atau buat repositori baru; monorepo memudahkan migrasi karena kode sudah terisolasi.
+- **CI/CD terpisah**: workflow GitHub Actions dapat menjalankan build/lint/test per workspace, memungkinkan deployment mandiri untuk tiap layanan.
+
+---
