@@ -181,3 +181,47 @@ Untuk menghindari pembengkakan fitur (*scope creep*) dan menjaga performa websit
 - **CI/CD terpisah**: workflow GitHub Actions dapat menjalankan build/lint/test per workspace, memungkinkan deployment mandiri untuk tiap layanan.
 
 ---
+
+## 7. Roadmap & Langkah Implementasi (Step-by-Step)
+
+Untuk memulai pengembangan CMS secara terstruktur, ikuti urutan langkah (fase) berikut ini agar tidak ada ketergantungan fitur yang tertinggal:
+
+### Fase 1: Persiapan Infrastruktur & Database (Backend)
+*Fokus: Membangun pondasi data dan koneksi database.*
+1. **Inisialisasi Folder `backend/`**: Siapkan folder untuk server (Express atau Next.js API Routes).
+2. **Setup Prisma ORM**: Instalasi Prisma dan siapkan file database SQLite (`dev.db`).
+3. **Definisi Schema**: Tulis model di `schema.prisma` berdasarkan pemetaan modul di Bagian 2 (Users, Berita, Prestasi, Fasilitas, Statistik, Inbox, PPDB).
+4. **Buat Script Seeder (`seed.ts`)**: Siapkan data awal (hardcoded dari desain yang ada saat ini) agar saat frontend dikoneksikan, layout tidak rusak/kosong.
+
+### Fase 2: Keamanan & Autentikasi (Auth)
+*Fokus: Memproteksi akses ke dashboard admin.*
+1. **Pembuatan API Login**: Buat endpoint untuk login dengan pengecekan password menggunakan bcrypt.
+2. **Sesi & Token JWT**: Konfigurasi token untuk otorisasi akses (gunakan HTTP-Only Secure Cookie).
+3. **Middleware Proteksi**: Siapkan middleware yang memblokir akses publik ke rute `/admin/*` dan memverifikasi Role (SuperAdmin, AdminHumas, AdminPPDB).
+
+### Fase 3: Fondasi UI Dashboard Admin (Frontend)
+*Fokus: Membangun kerangka visual panel admin.*
+1. **Halaman Login (`/admin/login`)**: Bangun form login sederhana yang terhubung dengan API Auth.
+2. **Layout Admin (`/admin/layout.tsx`)**: Buat Sidebar navigasi dan Top Navbar yang konsisten dengan tema desain.
+3. **Sistem Komponen UI (Reusable)**: Bangun UI dasar yang akan terus dipakai:
+   - *Data Table* (lengkap dengan search bar & pagination).
+   - *Modal* (untuk form Tambah/Edit dan konfirmasi hapus).
+   - *Form UI* (input teks, dropdown, upload gambar dengan preview).
+   - *Toast Notifications* (pesan sukses/error).
+
+### Fase 4: Implementasi CRUD per Modul (Iteratif)
+*Fokus: Mengelola data ke database melalui antarmuka admin.*
+Kerjakan secara berurutan:
+1. **Modul Pengguna (Admin Users)**: Krusial untuk testing pembagian hak akses (Role-based access).
+2. **Modul Berita & Prestasi**: Konten yang intensitas updatenya paling tinggi.
+3. **Modul PPDB**: Cukup kompleks, kelola (Jalur, Alur, Persyaratan, Jadwal & Biaya, FAQ).
+4. **Modul Fasilitas & Profil Statistik**: Modul ringan yang jarang diubah.
+5. **Modul Inbox/Konsultasi**: Tampilan Read-only untuk melihat pesan masuk dari landing page.
+
+### Fase 5: Integrasi dengan Halaman Publik (Frontend Publik)
+*Fokus: Mengganti data statis dengan data dinamis.*
+1. **Client Fetching / SSR**: Update fungsi pengambilan data di Next.js (buat helper `fetchAPI`).
+2. **Refactor Komponen Publik**: Modifikasi komponen (seperti `BeritaSection`, `PPDBJalur`, dll.) agar menampilkan data yang ditarik dari database, bukan lagi data statis/hardcoded.
+3. **Testing E2E**: Lakukan pengetesan; ubah data di CMS dan pastikan perubahannya tampil sempurna di landing page tanpa *layout shift*.
+
+---
