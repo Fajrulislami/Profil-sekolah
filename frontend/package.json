@@ -9,19 +9,32 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "@react-oauth/google": "^0.13.5",
+    "@vercel/blob": "^2.8.0",
     "framer-motion": "^11.11.17",
+    "google-auth-library": "^11.0.2",
     "lucide-react": "^1.33.0",
     "next": "16.2.9",
+    "nodemailer": "^9.0.5",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "swr": "^2.5.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "bcryptjs": "^3.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^5.20.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

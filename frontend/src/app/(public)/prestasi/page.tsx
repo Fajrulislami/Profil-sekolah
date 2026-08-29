@@ -6,6 +6,8 @@ import PrestasiDaftar from "@/components/pages/prestasi/PrestasiDaftar";
 import PrestasiGaleri from "@/components/pages/prestasi/PrestasiGaleri";
 import PrestasiCTA from "@/components/pages/prestasi/PrestasiCTA";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Galeri & Rekam Jejak Prestasi | Sekolah Madani & Pesantren Rabbani",
   description:

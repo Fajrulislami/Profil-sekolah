@@ -10,11 +10,43 @@ export default function PPDBCTA() {
     whatsapp: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.studentName && formData.whatsapp) {
-      setSubmitted(true);
+    if (formData.studentName && formData.whatsapp && formData.parentName) {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch("/api/v1/pendaftar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: formData.studentName,
+            gradeLevel: formData.jenjang,
+            parentName: formData.parentName,
+            phone: formData.whatsapp,
+          }),
+        });
+
+        if (!res.ok) {
+          let errorMsg = "Gagal mengirim data";
+          try {
+            const errData = await res.json();
+            errorMsg = errData.error || errorMsg;
+          } catch {
+            errorMsg = `Error sistem (${res.status}). Mohon refresh halaman dan coba lagi.`;
+          }
+          throw new Error(errorMsg);
+        }
+
+        setSubmitted(true);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -131,6 +163,12 @@ export default function PPDBCTA() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="p-6 rounded-3xl bg-slate-950/70 border border-slate-800 flex flex-col gap-4 text-left">
+                  {error && (
+                    <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm font-medium text-center">
+                      {error}
+                    </div>
+                  )}
+                  
                   <div>
                     <label className="text-xs font-bold text-slate-300 block mb-1.5">Nama Lengkap Calon Siswa</label>
                     <input
@@ -139,6 +177,18 @@ export default function PPDBCTA() {
                       placeholder="Contoh: Muhammad Rayhan"
                       value={formData.studentName}
                       onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
+                      className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-slate-300 block mb-1.5">Nama Orang Tua / Wali</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Contoh: Budi Santoso"
+                      value={formData.parentName}
+                      onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
                       className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all"
                     />
                   </div>
@@ -173,9 +223,17 @@ export default function PPDBCTA() {
 
                   <button
                     type="submit"
-                    className="w-full mt-2 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm transition-all duration-300 hover:shadow-[0_0_25px_rgba(251,191,36,0.3)] hover:-translate-y-0.5"
+                    disabled={loading}
+                    className="w-full mt-2 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:bg-amber-500/50 disabled:cursor-not-allowed text-slate-950 font-black text-sm transition-all duration-300 hover:shadow-[0_0_25px_rgba(251,191,36,0.3)] hover:-translate-y-0.5 flex items-center justify-center gap-2"
                   >
-                    Kirim Pendaftaran Awal
+                    {loading ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-slate-950/20 border-t-slate-950 rounded-full animate-spin"></span>
+                        Memproses...
+                      </>
+                    ) : (
+                      "Kirim Pendaftaran Awal"
+                    )}
                   </button>
                 </form>
               )}

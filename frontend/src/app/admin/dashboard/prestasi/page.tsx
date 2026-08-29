@@ -2,8 +2,15 @@ import React from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import PrestasiTable from '@/components/admin/prestasi/PrestasiTable';
+import { getUserFromToken } from '@/utils/auth-util';
+import AccessDenied from '@/components/admin/AccessDenied';
 
-export default function DaftarPrestasiPage() {
+export default async function DaftarPrestasiPage() {
+  const user = await getUserFromToken();
+
+  if (user?.role === 'AdminPPDB') {
+    return <AccessDenied />;
+  }
   return (
     <div className="space-y-6">
       {/* Header & Aksi Utama */}

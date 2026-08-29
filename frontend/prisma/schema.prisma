@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Pengguna {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String?  // Optional for Google-only login
+  googleId  String?  @unique // To store Google user ID
+  role      String   @default("AdminHumas") // SuperAdmin, AdminHumas, AdminPPDB
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Berita {
+  id         Int      @id @default(autoincrement())
+  title      String
+  slug       String   @unique
+  category   String   // KEGIATAN, PRESTASI, INFORMASI, PENGUMUMAN
+  excerpt    String
+  content    String
+  imageUrl   String?
+  author     String
+  isFeatured Boolean  @default(false)
+  status     String   @default("PUBLISHED") // DRAFT, PUBLISHED
+  viewer     Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Prestasi {
+  id              Int      @id @default(autoincrement())
+  title           String
+  recipient       String
+  competitionName String
+  level           String   // INTERNASIONAL, NASIONAL, PROVINSI, KOTA
+  category        String   // AKADEMIK, AGAMA, ROBOTIKA, OLAHRAGA_SENI
+  medal           String   // EMAS, PERAK, PERUNGGU, JUARA_1, JUARA_2, JUARA_3, HARAPAN
+  year            Int
+  date            DateTime
+  imageUrl        String?
+  description     String?
+  isFeatured      Boolean  @default(false)
+  status          String   @default("PUBLISHED") // DRAFT, PUBLISHED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Fasilitas {
+  id             Int      @id @default(autoincrement())
+  nama           String
+  category       String   // kategori sesuai tab (akademik, olahraga, keagamaan, kreativitas, pendukung)
+  deskripsi      String
+  fungsiUtama    String
+  kapasitas      String
+  lokasi         String
+  pengguna       String
+  status         String   @default("Aktif")
+  imageUrl       String?  // URL gambar yang di‑upload ke Vercel Blob
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Pesan {
+  id         Int      @id @default(autoincrement())
+  senderName String
+  email      String
+  phone      String?
+  subject    String
+  message    String
+  type       String   @default("CONTACT") // CONTACT, NEWSLETTER
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model PendaftarPPDB {
+  id                 Int      @id @default(autoincrement())
+  registrationNumber String   @unique
+  fullName           String
+  gradeLevel         String   // TK, SD, SMP, PESANTREN
+  parentName         String
+  phone              String
+  status             String   @default("PENDING") // PENDING, VERIFIED, REJECTED, ACCEPTED
+  isRead             Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model PPDBSetting {
+  id        Int      @id @default(autoincrement())
+  section   String   @unique // 'jalur', 'jadwal', 'persyaratan', 'alur', 'faq'
+  content   String   // JSON stringified array of objects
+  updatedAt DateTime @updatedAt
+}

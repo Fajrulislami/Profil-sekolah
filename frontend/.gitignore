@@ -26,6 +26,10 @@ next-env.d.ts
 # Vercel
 .vercel
 
+# Prisma SQLite Database
+prisma/*.db
+prisma/*.db-journal
+
 # Misc
 .DS_Store
 *.pem

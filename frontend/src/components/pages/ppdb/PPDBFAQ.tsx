@@ -1,37 +1,15 @@
 "use client";
 
+import useSWR from 'swr';
 import { useState } from "react";
 
-export default function PPDBFAQ() {
-  // Ubah initial state menjadi null agar semua tertutup saat awal di-load
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
+const fetcher = (url: string) => fetch(url, { headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }, cache: 'no-store' }).then(res => res.json());
 
-  const faqs = [
-    {
-      q: "Apakah ada tes seleksi akademik yang menggugurkan untuk calon siswa SD?",
-      a: "Tidak ada tes akademik yang bersifat menggugurkan. Pada jenjang SD, kami menggunakan pendekatan Observasi Kesiapan Belajar untuk memetakan kematangan emosi, motorik, konsentrasi, dan gaya belajar anak agar guru dapat memberikan pendampingan terbaik sejak hari pertama.",
-    },
-    {
-      q: "Bagaimana mekanisme beasiswa penuh Tahfidz 30 Juz?",
-      a: "Calon santri/siswa yang mendaftar jalur beasiswa tahfidz akan mengikuti sesi tasmi' (pengujian hafalan) bersama dewan asatidz. Beasiswa mencakup pembebasan uang pangkal, SPP bulanan, dan asrama selama masa studi dengan mempertahankan kualitas hafalan.",
-    },
-    {
-      q: "Apakah biaya uang pengembangan/gedung bisa dicicil?",
-      a: "Ya, kami menyediakan skema pembayaran bertahap (cicilan) hingga 3 kali pembayaran sebelum tahun ajaran baru dimulai untuk memudahkan para orang tua.",
-    },
-    {
-      q: "Kapan jadwal observasi dan wawancara dilaksanakan setelah mendaftar online?",
-      a: "Setelah formulir online dan berkas awal terverifikasi, panitia PPDB akan mengirimkan undangan jadwal observasi & wawancara (pilihan sesi offline di sekolah atau online) dalam kurun waktu maksimal 3 hari kerja melalui WhatsApp.",
-    },
-    {
-      q: "Apakah diperbolehkan melakukan School Tour atau konsultasi langsung sebelum mendaftar?",
-      a: "Sangat diperbolehkan! Kami menyambut kedatangan calon wali murid setiap hari kerja (Senin–Jumat pukul 08.00–16.00 WIB dan Sabtu pukul 08.00–13.00 WIB) untuk melihat langsung fasilitas sekolah dan berdiskusi dengan tim kurikulum.",
-    },
-    {
-      q: "Bagaimana fasilitas dan pembinaan bagi santri baru di asrama pesantren?",
-      a: "Asrama dilengkapi dengan kamar ber-AC, lemari pribadi, ranjang berkualitas, layanan laundry, catering gizi seimbang 3x sehari, klinik kesehatan, serta didampingi oleh musyrif/musyrifah 24 jam untuk pembiasaan ibadah dan adab harian.",
-    },
-  ];
+export default function PPDBFAQ() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const { data: fetchRes, error } = useSWR('/api/v1/ppdb-setting?section=faq', fetcher);
+
+  const faqs = fetchRes?.data || [];
 
   return (
     <section className="relative w-full py-24 bg-slate-950 font-sans border-t border-slate-900 overflow-hidden">
@@ -63,53 +41,59 @@ export default function PPDBFAQ() {
 
         {/* Accordion List */}
         <div className="space-y-4">
-          {faqs.map((faq, idx) => {
-            const isOpen = openIdx === idx;
-            return (
-              <div
-                key={idx}
-                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                  isOpen
-                    ? "bg-slate-900/90 border-amber-400/40 shadow-lg"
-                    : "bg-slate-900/40 border-slate-800 hover:border-slate-700"
-                }`}
-              >
-                {/* Tombol Header Accordion */}
-                <button
-                  type="button"
-                  onClick={() => setOpenIdx(isOpen ? null : idx)}
-                  className="w-full p-6 text-left flex items-center justify-between gap-4 font-black text-base sm:text-lg text-white cursor-pointer"
-                >
-                  <span className="pr-4">{faq.q}</span>
-                  <div
-                    className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 transition-all duration-300 ${
-                      isOpen 
-                        ? "bg-amber-500 text-slate-950 border-transparent rotate-180" 
-                        : "bg-slate-800 border-amber-400/30 text-amber-400"
-                    }`}
-                  >
-                    {/* Menggunakan SVG Chevron agar lebih konsisten & rapi */}
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </button>
-
-                {/* Konten Accordion dengan Animasi Mulus */}
+          {faqs.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-slate-400 text-lg">Belum ada data yang diisi</p>
+            </div>
+          ) : (
+            faqs.map((faq: any, idx: number) => {
+              const isOpen = openIdx === idx;
+              return (
                 <div
-                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
-                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  key={idx}
+                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                    isOpen
+                      ? "bg-slate-900/90 border-amber-400/40 shadow-lg"
+                      : "bg-slate-900/40 border-slate-800 hover:border-slate-700"
                   }`}
                 >
-                  <div className="overflow-hidden">
-                    <div className="px-6 pb-6 pt-4 text-slate-300 text-sm sm:text-base leading-relaxed font-medium border-t border-slate-800/60">
-                      {faq.a}
+                  {/* Tombol Header Accordion */}
+                  <button
+                    type="button"
+                    onClick={() => setOpenIdx(isOpen ? null : idx)}
+                    className="w-full p-6 text-left flex items-center justify-between gap-4 font-black text-base sm:text-lg text-white cursor-pointer"
+                  >
+                    <span className="pr-4">{faq.q}</span>
+                    <div
+                      className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 transition-all duration-300 ${
+                        isOpen 
+                          ? "bg-amber-500 text-slate-950 border-transparent rotate-180" 
+                          : "bg-slate-800 border-amber-400/30 text-amber-400"
+                      }`}
+                    >
+                      {/* Menggunakan SVG Chevron agar lebih konsisten & rapi */}
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </button>
+
+                  {/* Konten Accordion dengan Animasi Mulus */}
+                  <div
+                    className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="px-6 pb-6 pt-4 text-slate-300 text-sm sm:text-base leading-relaxed font-medium border-t border-slate-800/60">
+                        {faq.a}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
 
       </div>

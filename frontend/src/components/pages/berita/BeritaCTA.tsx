@@ -6,12 +6,40 @@ import Link from "next/link";
 export default function BeritaCTA() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setEmail("");
+    if (!email) return;
+    
+    setIsSubmitting(true);
+    setApiError(null);
+    try {
+      const response = await fetch('/api/v1/pesan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          senderName: "Pengunjung Web",
+          email: email,
+          subject: "Langganan Buletin",
+          message: `Pengguna mendaftarkan email ${email} untuk berlangganan buletin pengumuman sekolah.`,
+          type: "NEWSLETTER"
+        }),
+      });
+
+      if (response.ok) {
+        setSubscribed(true);
+        setEmail("");
+      } else {
+        const errorData = await response.json();
+        setApiError(errorData.error || "Gagal berlangganan. Silakan coba lagi nanti.");
+      }
+    } catch (error) {
+      console.error("Error subscribing:", error);
+      setApiError("Terjadi kesalahan jaringan.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -186,14 +214,28 @@ export default function BeritaCTA() {
                     onChange={(e) => setEmail(e.target.value)}
                     className="flex-1 px-4 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all"
                   />
-                  {/* Tombol CTA Emas Tanpa Ikon Panah Sesuai Guidelines */}
                   <button
                     type="submit"
-                    className="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm transition-all duration-300 hover:shadow-[0_0_25px_rgba(251,191,36,0.3)] hover:-translate-y-0.5 shrink-0"
+                    disabled={isSubmitting}
+                    className={`px-6 py-3.5 rounded-xl font-black text-sm transition-all duration-300 hover:-translate-y-0.5 shrink-0 ${
+                      isSubmitting
+                        ? "bg-amber-500/70 text-slate-950/70 cursor-not-allowed"
+                        : "bg-amber-500 hover:bg-amber-400 text-slate-950 hover:shadow-[0_0_25px_rgba(251,191,36,0.3)]"
+                    }`}
                   >
-                    Berlangganan
+                    {isSubmitting ? "Memproses..." : "Berlangganan"}
                   </button>
                 </form>
+              )}
+              
+              {/* Alert Pengiriman Gagal */}
+              {apiError && (
+                <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm font-bold rounded-xl text-left flex items-center gap-2">
+                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                  {apiError}
+                </div>
               )}
             </div>
 

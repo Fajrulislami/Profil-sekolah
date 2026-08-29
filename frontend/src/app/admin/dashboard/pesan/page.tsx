@@ -1,7 +1,14 @@
 import React from 'react';
 import PesanInbox from '@/components/admin/pesan/PesanInbox';
+import { getUserFromToken } from '@/utils/auth-util';
+import AccessDenied from '@/components/admin/AccessDenied';
 
-export default function PesanPage() {
+export default async function PesanPage() {
+  const user = await getUserFromToken();
+
+  if (user?.role === 'AdminPPDB') {
+    return <AccessDenied />;
+  }
   return (
     <div className="space-y-6 h-full flex flex-col">
       {/* Header */}

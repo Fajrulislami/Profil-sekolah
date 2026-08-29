@@ -1,75 +1,31 @@
 "use client";
 
+import useSWR from 'swr';
 import { useState, useEffect } from "react";
 
+const fetcher = (url: string) => fetch(url, { headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }, cache: 'no-store' }).then(res => res.json());
+
 export default function PPDBJadwalBiaya() {
-  // State untuk memastikan render tanggal aman di sisi client (mencegah error hydration Next.js)
   const [isMounted, setIsMounted] = useState(false);
+  const { data: fetchRes, error } = useSWR('/api/v1/ppdb-setting?section=jadwal', fetcher);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Kita gunakan tanggal hari ini secara otomatis.
-  // Catatan: Jika ingin mencoba/tes UI, Anda bisa ganti new Date() menjadi new Date("2027-04-10")
-  const today = new Date();
+  const wavesData = fetchRes?.data?.waves || [];
+  const feeComponents = fetchRes?.data?.feeItems || [];
 
-  // Data gelombang sekarang menggunakan startDate dan endDate untuk pengecekan otomatis
-  const wavesData = [
-    {
-      name: "Gelombang 1 (Awal)",
-      period: "01 Oktober - 31 Desember 2026",
-      startDate: new Date("2026-10-01T00:00:00"),
-      endDate: new Date("2026-12-31T23:59:59"),
-      benefit: "Diskon Uang Gedung 20% & Gratis Biaya Formulir",
-    },
-    {
-      name: "Gelombang 2 (Reguler)",
-      period: "01 Januari - 31 Maret 2027",
-      startDate: new Date("2027-01-01T00:00:00"),
-      endDate: new Date("2027-03-31T23:59:59"),
-      benefit: "Diskon Biaya Masuk 10% & Prioritas Pilihan Kelas",
-    },
-    {
-      name: "Gelombang 3 (Penutupan)",
-      period: "01 April - 30 Mei 2027",
-      startDate: new Date("2027-04-01T00:00:00"),
-      endDate: new Date("2027-05-30T23:59:59"),
-      benefit: "Pendaftaran Ditutup Otomatis Jika Kuota Sudah Penuh",
-    },
-  ];
-
-  // Logic Otomatis: Menentukan status masing-masing gelombang berdasarkan tanggal hari ini
-  const waves = wavesData.map((w) => {
-    const isPast = today > w.endDate;
-    const isFuture = today < w.startDate;
-    const isCurrent = today >= w.startDate && today <= w.endDate;
-
-    let status = "";
-    let statusColor = "";
-
-    if (isCurrent) {
-      status = "Sedang Dibuka";
-      statusColor = "bg-emerald-600 text-white animate-pulse";
-    } else if (isPast) {
-      status = "Selesai";
-      statusColor = "bg-slate-200 text-slate-700";
-    } else {
-      status = "Akan Datang";
-      statusColor = "bg-amber-100 text-amber-800 border border-amber-300";
-    }
-
-    return { ...w, isCurrent, status, statusColor };
+  // Karena startDate dan endDate tidak lagi dikelola, kita akan memberikan status default "Tersedia"
+  const waves = wavesData.map((w: any, index: number) => {
+    return { 
+      ...w, 
+      isCurrent: index === 0, // Misal gelombang 1 selalu ditandai aktif jika mau
+      status: index === 0 ? "Sedang Dibuka" : "Buka / Akan Datang", 
+      statusColor: index === 0 ? "bg-emerald-600 text-white animate-pulse" : "bg-slate-200 text-slate-700" 
+    };
   });
 
-  const feeComponents = [
-    { name: "Formulir & Temu Kenal Anak", note: "Cukup dibayar 1 kali saat mendaftar" },
-    { name: "Uang Masuk / Gedung", note: "Bisa dicicil hingga 3 kali pembayaran" },
-    { name: "Paket Seragam & Buku Lengkap", note: "Dapat 5 pasang seragam lengkap & buku panduan" },
-    { name: "SPP Bulanan", note: "Sudah mencakup semua kegiatan & ekstrakurikuler" },
-  ];
-
-  // Cegah render sebelum client siap agar tidak ada mismatch UI
   if (!isMounted) return null;
 
   return (
@@ -165,7 +121,7 @@ export default function PPDBJadwalBiaya() {
               Ingin minta rincian tabel biaya resmi dalam format PDF untuk jenjang anak Anda?
             </p>
             <a
-              href="https://wa.me/6281234567890?text=Halo%20Panitia%20PPDB,%20saya%20ingin%20meminta%20brosur%20dan%20rincian%20biaya%20resmi"
+              href="https://wa.me/?text=Halo%20Panitia%20PPDB,%20saya%20ingin%20meminta%20brosur%20dan%20rincian%20biaya%20resmi"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all hover:-translate-y-0.5"

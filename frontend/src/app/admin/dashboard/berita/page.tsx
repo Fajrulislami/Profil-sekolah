@@ -2,8 +2,15 @@ import React from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react'; // Hapus Search, Edit, Trash2 karena sudah dipindah ke tabel
 import BeritaTable from '@/components/admin/berita/BeritaTable';
+import { getUserFromToken } from '@/utils/auth-util';
+import AccessDenied from '@/components/admin/AccessDenied';
 
-export default function DaftarBeritaPage() {
+export default async function DaftarBeritaPage() {
+  const user = await getUserFromToken();
+
+  if (user?.role === 'AdminPPDB') {
+    return <AccessDenied />;
+  }
   return (
     <div className="space-y-6">
       

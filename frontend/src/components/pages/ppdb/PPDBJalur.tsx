@@ -1,64 +1,13 @@
 "use client";
 
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url, { headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }, cache: 'no-store' }).then(res => res.json());
+
 export default function PPDBJalur() {
-  const tracks = [
-    {
-      id: 1,
-      title: "Beasiswa Hafidz Qur'an",
-      subtitle: "Bebas Biaya Pendidikan 100%",
-      badge: "Gratis SPP & Asrama",
-      desc: "Khusus untuk anak yang memiliki hafalan Al-Qur'an (minimal 15–30 Juz). Sekolah menanggung seluruh biaya pendaftaran, SPP bulanan, dan asrama sampai lulus.",
-      points: [
-        "Gratis uang masuk & SPP bulanan",
-        "Gratis tempat tinggal asrama & makan",
-        "Bimbingan khusus hafalan mutqin",
-      ],
-      imageUrl: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?q=80&w=1470&auto=format&fit=crop",
-      isFeatured: true,
-    },
-    {
-      id: 2,
-      title: "Jalur Juara Lomba & Prestasi",
-      subtitle: "Langsung Diterima Tanpa Tes Tulis",
-      badge: "Diskon Biaya s.d 50%",
-      desc: "Untuk anak yang pernah juara lomba (Juara 1, 2, atau 3) di bidang Sains/OSN, Olahraga, Seni, atau Robotika minimal tingkat Kota/Kabupaten.",
-      points: [
-        "Tidak perlu ikut tes tulis akademik",
-        "Potongan uang masuk sekolah hingga 50%",
-        "Masuk kelas pembinaan bakat juara",
-      ],
-      imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop",
-      isFeatured: false,
-    },
-    {
-      id: 3,
-      title: "Jalur Pendaftaran Umum",
-      subtitle: "Terbuka untuk Semua Calon Siswa",
-      badge: "Jenjang TK, SD, SMP & Pesantren",
-      desc: "Jalur masuk reguler untuk seluruh calon siswa. Penilaian tidak memakai tes yang menakutkan, melainkan temu kenal santai untuk melihat minat dan bakat anak.",
-      points: [
-        "Tes ramah anak & menyenangkan",
-        "Mengetahui potensi & gaya belajar anak",
-        "Pendampingan belajar sejak hari pertama",
-      ],
-      imageUrl: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1470&auto=format&fit=crop",
-      isFeatured: false,
-    },
-    {
-      id: 4,
-      title: "Jalur Kakak-Beradik (Keluarga)",
-      subtitle: "Keringanan Khusus Saudara Kandung",
-      badge: "Hemat Biaya Masuk",
-      desc: "Khusus untuk Bapak/Ibu yang sudah memiliki anak yang bersekolah di sini. Dapatkan potongan biaya khusus jika mendaftarkan adik atau saudaranya.",
-      points: [
-        "Diskon khusus uang pengembangan",
-        "Jaminan prioritas kursi kuota",
-        "Proses berkas lebih cepat & praktis",
-      ],
-      imageUrl: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1470&auto=format&fit=crop",
-      isFeatured: false,
-    },
-  ];
+  const { data: fetchRes, error } = useSWR('/api/v1/ppdb-setting?section=jalur', fetcher);
+
+  const tracks = fetchRes?.data || [];
 
   return (
     <section className="relative w-full py-24 bg-slate-950 font-sans border-t border-slate-900 overflow-hidden">
@@ -88,20 +37,32 @@ export default function PPDBJalur() {
           </p>
         </div>
 
-        {/* 4 Kartu Jalur Masuk (Jelas, Berfoto, dan Mudah Dibaca) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {tracks.map((track) => (
+        {tracks.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-slate-400 text-lg">Belum ada data yang diisi</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {tracks.map((track: any) => (
             <div
               key={track.id}
               className="group rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-amber-400/40 overflow-hidden shadow-xl transition-all duration-500 hover:-translate-y-1 flex flex-col justify-between"
             >
               {/* Foto Ilustrasi Header */}
               <div className="relative w-full h-56 sm:h-64 overflow-hidden bg-slate-950">
-                <img
-                  src={track.imageUrl}
-                  alt={track.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+                {track.imageUrl ? (
+                  <img
+                    src={track.imageUrl}
+                    alt={track.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition-colors duration-700">
+                    <svg className="w-12 h-12 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
                 
                 {/* Badge Status Kuning/Emas */}
@@ -153,11 +114,11 @@ export default function PPDBJalur() {
                     Daftar Jalur Ini
                   </a>
                 </div>
-
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
       </div>
     </section>

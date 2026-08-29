@@ -2,8 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import PenggunaTable from '@/components/admin/pengguna/PenggunaTable';
+import { getUserFromToken } from '@/utils/auth-util';
 
-export default function PenggunaPage() {
+export default async function PenggunaPage() {
+  const user = await getUserFromToken();
+
   return (
     <div className="space-y-6">
       {/* Header & Aksi Utama */}
@@ -23,7 +26,7 @@ export default function PenggunaPage() {
         </Link>
       </div>
 
-      <PenggunaTable />
+      <PenggunaTable currentUserId={user?.id} />
     </div>
   );
 }

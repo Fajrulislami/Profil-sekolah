@@ -1,84 +1,37 @@
 "use client";
 
-import { useState } from "react";
-
-interface GalleryItem {
-  id: number;
-  title: string;
-  category: "all" | "podium" | "sains" | "tahfidz" | "olahraga";
-  image: string;
-  caption: string;
-  event: string;
-  year: string;
-}
-
-const galleryItems: GalleryItem[] = [
-  {
-    id: 1,
-    title: "Penyerahan Medali Emas OSN Nasional",
-    category: "podium",
-    image: "https://images.unsplash.com/photo-1561525140-c2a4cc68e4bd?q=80&w=1000&auto=format&fit=crop",
-    caption: "Ahmad Fadhil menerima piagam dan medali emas dari Direktur Puspresnas.",
-    event: "OSN Kemendikbudristek",
-    year: "2025",
-  },
-  {
-    id: 2,
-    title: "Selebrasi Juara MHQ 30 Juz Internasional",
-    category: "tahfidz",
-    image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?q=80&w=1000&auto=format&fit=crop",
-    caption: "Santri Muhammad Syamil diapit dewan asatidz usai pengumuman juara di Kuala Lumpur.",
-    event: "ASEAN Quranic Fest",
-    year: "2024",
-  },
-  {
-    id: 3,
-    title: "Uji Terbang Drone Tim Robotika",
-    category: "sains",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1000&auto=format&fit=crop",
-    caption: "Simulasi manuver otonom drone pendeteksi korban bencana di arena kompetisi.",
-    event: "IIRO Championship",
-    year: "2025",
-  },
-  {
-    id: 4,
-    title: "Pengangkatan Piala Bergilir Gubernur",
-    category: "podium",
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1000&auto=format&fit=crop",
-    caption: "Tim Basket Putra merayakan kemenangan bersama para suporter dan kepala sekolah.",
-    event: "Piala Bergilir Gubernur",
-    year: "2025",
-  },
-  {
-    id: 5,
-    title: "Fokus Bidikan di Kejurda Panahan",
-    category: "olahraga",
-    image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1000&auto=format&fit=crop",
-    caption: "Atlet panahan membidik sasaran 50 meter dengan konsentrasi penuh.",
-    event: "Kejurda Perpani",
-    year: "2024",
-  },
-  {
-    id: 6,
-    title: "Pameran Kaligrafi Kontemporer FLS2N",
-    category: "sains",
-    image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1000&auto=format&fit=crop",
-    caption: "Karya kaligrafi Zahra dipamerkan di galeri seni nasional sebelum penilaian dewan juri.",
-    event: "FLS2N Seni Rupa",
-    year: "2024",
-  },
-];
-
+import { useState, useEffect } from "react";
 export default function PrestasiGaleri() {
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [activeImage, setActiveImage] = useState<GalleryItem | null>(null);
+  const [activeImage, setActiveImage] = useState<any | null>(null);
+  const [galleryItems, setGalleryItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPrestasi = async () => {
+      try {
+        const res = await fetch('/api/v1/prestasi?public=true', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          // Hanya ambil prestasi yang memiliki foto
+          const itemsWithImage = data.filter((item: any) => item.imageUrl);
+          setGalleryItems(itemsWithImage);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data prestasi:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPrestasi();
+  }, []);
 
   const tabs = [
     { id: "all", label: "Semua Momen" },
-    { id: "podium", label: "Podium & Piala" },
-    { id: "sains", label: "Sains & Robotika" },
-    { id: "tahfidz", label: "Tahfidz & Keagamaan" },
-    { id: "olahraga", label: "Aksi Lapangan" },
+    { id: "Akademik", label: "Sains & Akademik" },
+    { id: "Robotika & Teknologi", label: "Robotika & Teknologi" },
+    { id: "Tahfidz & Keagamaan", label: "Tahfidz & Keagamaan" },
+    { id: "Olahraga & Seni", label: "Olahraga & Seni" },
   ];
 
   const filteredGallery =
@@ -153,7 +106,7 @@ export default function PrestasiGaleri() {
                   className="group relative h-80 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer border border-slate-200"
                 >
                   <img
-                    src={item.image}
+                    src={item.imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
@@ -164,7 +117,7 @@ export default function PrestasiGaleri() {
                   {/* Top Badge */}
                   <div className="absolute top-4 left-4 z-10">
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/90 text-slate-800 backdrop-blur-md shadow-sm">
-                      {item.event}
+                      {item.competitionName}
                     </span>
                   </div>
 
@@ -177,7 +130,7 @@ export default function PrestasiGaleri() {
                       {item.title}
                     </h3>
                     <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {item.caption}
+                      {item.description}
                     </p>
                   </div>
 
@@ -218,7 +171,7 @@ export default function PrestasiGaleri() {
 
             <div className="relative h-96 sm:h-[450px] w-full bg-black">
               <img
-                src={activeImage.image}
+                src={activeImage.imageUrl}
                 alt={activeImage.title}
                 className="w-full h-full object-contain"
               />
@@ -227,14 +180,14 @@ export default function PrestasiGaleri() {
             <div className="p-6 bg-slate-900 text-white">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/40">
-                  {activeImage.event}
+                  {activeImage.competitionName}
                 </span>
                 <span className="text-xs text-slate-400">
                   Tahun {activeImage.year}
                 </span>
               </div>
               <h3 className="text-xl font-bold mb-2">{activeImage.title}</h3>
-              <p className="text-sm text-slate-300">{activeImage.caption}</p>
+              <p className="text-sm text-slate-300">{activeImage.description}</p>
             </div>
           </div>
         </div>

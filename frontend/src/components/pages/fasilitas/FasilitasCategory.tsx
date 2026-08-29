@@ -20,100 +20,8 @@ interface FacilityItem {
   lokasi: string;
   digunakanOleh: string;
   image: string;
+  category: string;
 }
-
-const facilityData: Record<string, FacilityItem[]> = {
-  akademik: [
-    { 
-      id: 1, 
-      title: "Ruang Kelas Interaktif", 
-      desc: "Ruang kelas modern yang dirancang untuk mendukung pembelajaran dua arah secara digital demi memicu keaktifan siswa.", 
-      fungsi: "Proses belajar mengajar harian berbasis teknologi terintegrasi.",
-      kapasitas: "25 - 30 Siswa",
-      lokasi: "Gedung Utama (Lantai 1-3)",
-      digunakanOleh: "Semua Jenjang (TK / SD / SMP)",
-      image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop" 
-    },
-    { 
-      id: 2, 
-      title: "Perpustakaan Digital", 
-      desc: "Pusat literasi modern yang menggabungkan koleksi buku fisik konvensional dengan ribuan akses e-book internasional.", 
-      fungsi: "Membaca, riset mandiri, pengerjaan tugas, dan diskusi tenang.",
-      kapasitas: "80 Orang",
-      lokasi: "Gedung B (Lantai 2)",
-      digunakanOleh: "SD / SMP",
-      image: "https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=800&auto=format&fit=crop" 
-    },
-    { 
-      id: 3, 
-      title: "Laboratorium Sains", 
-      desc: "Ruang eksperimen ilmiah terpadu dengan standar keamanan tinggi untuk membuktikan teori-teori sains secara praktis.", 
-      fungsi: "Praktikum biologi, fisika, kimia, dan eksperimen alam.",
-      kapasitas: "36 Siswa",
-      lokasi: "Gedung C (Lantai 1)",
-      digunakanOleh: "SMP",
-      image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=800&auto=format&fit=crop" 
-    },
-  ],
-  olahraga: [
-    { 
-      id: 5, 
-      title: "Lapangan Basket Indoor", 
-      desc: "Fasilitas olahraga dalam ruangan berlantai kayu standar turnamen resmi untuk mendukung kesehatan fisik siswa.", 
-      fungsi: "Kegiatan olahraga basket, bulu tangkis, dan latihan fisik.",
-      kapasitas: "200 Penonton (Tribun)",
-      lokasi: "Sport Center (Gedung D)",
-      digunakanOleh: "SD / SMP",
-      image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=800&auto=format&fit=crop" 
-    },
-    { 
-      id: 6, 
-      title: "Kolam Renang Semi-Olympic", 
-      desc: "Kolam renang prestasi dengan kedalaman bertingkat yang aman dan sistem penyaringan air otomatis berkala.", 
-      fungsi: "Pelajaran olahraga renang wajib dan pembinaan prestasi ekskul.",
-      kapasitas: "50 Orang",
-      lokasi: "Area Outdoor Belakang",
-      digunakanOleh: "Semua Jenjang",
-      image: "https://images.unsplash.com/photo-1519315901367-f34f815b6719?q=80&w=800&auto=format&fit=crop" 
-    },
-  ],
-  keagamaan: [
-    { 
-      id: 9, 
-      title: "Masjid Raya Madani", 
-      desc: "Pusat kegiatan spiritual dan pembentukan karakter Islami seluruh warga sekolah untuk mencetak generasi berakhlak mulia.", 
-      fungsi: "Salat berjamaah, kajian rutin, kajian jumat, dan setoran hafalan.",
-      kapasitas: "500 Jemaah",
-      lokasi: "Kompleks Depan Barat",
-      digunakanOleh: "Semua Jenjang",
-      image: "https://images.unsplash.com/photo-1564769625905-50e93615e769?q=80&w=800&auto=format&fit=crop" 
-    },
-  ],
-  kreativitas: [
-    { 
-      id: 13, 
-      title: "Lab Robotik & Coding", 
-      desc: "Laboratorium komputer mutakhir yang didedikasikan untuk pengembangan logika computational thinking dan rekayasa teknologi.", 
-      fungsi: "Belajar coding, pembuatan web/aplikasi, dan perakitan robot.",
-      kapasitas: "24 Siswa",
-      lokasi: "Gedung Tekno (Lantai 2)",
-      digunakanOleh: "SMP",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1000&auto=format&fit=crop" 
-    },
-  ],
-  pendukung: [
-    { 
-      id: 15, 
-      title: "Kantin Sehat Higienis", 
-      desc: "Area istirahat makan komunal yang hanya menyajikan hidangan sehat bebas pengawet dan zat pewarna berbahaya.", 
-      fungsi: "Penyediaan konsumsi gizi seimbang siswa selama jam istirahat.",
-      kapasitas: "150 Kursi",
-      lokasi: "Area Koridor Tengah",
-      digunakanOleh: "Semua Jenjang",
-      image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=800&auto=format&fit=crop" 
-    },
-  ],
-};
 
 export default function FasilitasCategory() {
   const [activeTab, setActiveTab] = useState(categories[0].id);
@@ -122,6 +30,42 @@ export default function FasilitasCategory() {
   const [headerInView, setHeaderInView] = useState(false);
   const [tabsInView, setTabsInView] = useState(false);
   const [gridInView, setGridInView] = useState(false);
+
+  // State for facilities fetched from API
+  const [facilities, setFacilities] = useState<FacilityItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Fetch facilities from backend
+  const fetchFacilities = async () => {
+    try {
+      const res = await fetch('/api/v1/fasilitas', { cache: 'no-store' });
+      if (!res.ok) {
+        setIsLoading(false);
+        return;
+      }
+      const data = await res.json();
+      const mapped = data.map((item: any) => ({
+        id: item.id,
+        title: item.nama,
+        desc: item.deskripsi,
+        fungsi: item.fungsiUtama,
+        kapasitas: item.kapasitas,
+        lokasi: item.lokasi,
+        digunakanOleh: item.pengguna,
+        image: item.imageUrl ?? '',
+        category: item.category ?? '',
+      }));
+      setFacilities(mapped);
+    } catch (error) {
+      console.error('Error fetching fasilitas:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFacilities();
+  }, []);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -160,7 +104,7 @@ export default function FasilitasCategory() {
   }, []);
 
   // Safeguard jika data kategori yang diklik kosong/belum diisi data dummy
-  const activeItems = facilityData[activeTab] || [];
+  const activeItems = isLoading ? [] : facilities.filter(f => f.category === activeTab);
 
   return (
     <section className="w-full bg-slate-100 py-24 lg:py-32 overflow-visible relative">
@@ -227,13 +171,17 @@ export default function FasilitasCategory() {
                     opacity: gridInView ? 1 : 0,
                   }}
                 >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
-                    <img 
-                      src={item.image} 
-                      alt={item.title} 
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-750 ease-out"
-                      loading="lazy"
-                    />
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200 flex items-center justify-center">
+                    {item.image ? (
+                      <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-750 ease-out"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-slate-400 text-sm font-medium">Tidak ada foto</span>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent"></div>
                   </div>
 
@@ -250,7 +198,7 @@ export default function FasilitasCategory() {
             </div>
           ) : (
             <div className="text-center py-12 text-slate-400 font-medium text-sm">
-              Belum ada data fasilitas untuk kategori ini.
+              {isLoading ? "Memuat data..." : "Belum ada data fasilitas untuk kategori ini."}
             </div>
           )}
         </div>
@@ -270,12 +218,16 @@ export default function FasilitasCategory() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Foto Atas */}
-            <div className="relative h-44 sm:h-52 w-full bg-slate-100 flex-shrink-0 overflow-hidden">
-              <img 
-                src={selectedFacility.image} 
-                alt={selectedFacility.title} 
-                className="w-full h-full object-cover"
-              />
+            <div className="relative h-44 sm:h-52 w-full bg-slate-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
+              {selectedFacility.image ? (
+                <img 
+                  src={selectedFacility.image} 
+                  alt={selectedFacility.title} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-slate-400 text-sm font-medium">Tidak ada foto</span>
+              )}
               <button 
                 onClick={() => setSelectedFacility(null)}
                 className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-900/60 backdrop-blur-md text-white flex items-center justify-center font-bold text-xs hover:bg-slate-900 transition-colors shadow-md z-10"

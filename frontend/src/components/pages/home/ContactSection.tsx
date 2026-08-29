@@ -6,23 +6,50 @@ export default function ContactSection() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setApiError(null);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/v1/pesan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          senderName: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: formData.subject,
+          message: formData.message,
+          type: "CONTACT"
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+        setTimeout(() => setIsSubmitted(false), 5000);
+      } else {
+        const errorData = await response.json();
+        setApiError(`Gagal mengirim pesan: ${errorData.error || 'Terjadi kesalahan'}`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setApiError('Terjadi kesalahan koneksi saat mengirim pesan.');
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setTimeout(() => setIsSubmitted(false), 5000);
-    }, 1500);
+    }
   };
 
   return (
@@ -189,17 +216,31 @@ export default function ContactSection() {
                 </div>
               </div>
 
-              {/* Input Subjek */}
-              <div className="space-y-2">
-                <label className="text-xs font-extrabold text-[#0B1120] uppercase tracking-widest block pl-1">Perihal / Subjek</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-5 py-4 rounded-2xl bg-slate-50/60 border border-slate-200/80 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/5 transition-all text-sm text-slate-800"
-                  placeholder="Kategori pesan (Contoh: Informasi Pendaftaran)"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Input Telepon */}
+                <div className="space-y-2">
+                  <label className="text-xs font-extrabold text-[#0B1120] uppercase tracking-widest block pl-1">No. Telepon / WhatsApp</label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-5 py-4 rounded-2xl bg-slate-50/60 border border-slate-200/80 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/5 transition-all text-sm text-slate-800"
+                    placeholder="Contoh: 081234567890"
+                  />
+                </div>
+
+                {/* Input Subjek */}
+                <div className="space-y-2">
+                  <label className="text-xs font-extrabold text-[#0B1120] uppercase tracking-widest block pl-1">Perihal / Subjek</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="w-full px-5 py-4 rounded-2xl bg-slate-50/60 border border-slate-200/80 focus:outline-none focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/5 transition-all text-sm text-slate-800"
+                    placeholder="Kategori pesan (Contoh: Informasi Pendaftaran)"
+                  />
+                </div>
               </div>
 
               {/* Input Pesan */}
@@ -222,6 +263,16 @@ export default function ContactSection() {
                     <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm-1.293 15.607l-3.9-3.813 1.414-1.415 2.445 2.39 5.857-5.961 1.428 1.402-7.244 7.397z"/>
                   </svg>
                   Pesan Anda terkirim! Tim Admin kami akan membalas via email secepatnya.
+                </div>
+              )}
+
+              {/* Alert Pengiriman Gagal */}
+              {apiError && (
+                <div className="p-4 bg-rose-50/80 border border-rose-200 text-rose-800 rounded-2xl text-sm font-semibold flex items-center gap-3">
+                  <svg className="w-5 h-5 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                  {apiError}
                 </div>
               )}
 

@@ -3,35 +3,20 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, User, Calendar, Share2 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import prisma from '@/lib/prisma';
+import { notFound } from 'next/navigation';
 
-// Dummy data generator berdasarkan slug
-const getBeritaBySlug = (slug: string) => {
-  return {
-    title: "Prestasi Membanggakan: Juara 1 Olimpiade Sains Nasional 2026",
-    category: "Prestasi",
-    author: "Tim Humas",
-    date: "20 Agustus 2026",
-    readTime: "4 Menit Baca",
-    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=600&fit=crop",
-    content: `
-      <p>Prestasi membanggakan kembali ditorehkan oleh siswa-siswi terbaik kita. Dalam ajang Olimpiade Sains Nasional (OSN) tingkat Nasional tahun 2026 yang diselenggarakan di Jakarta, kontingen sekolah kita berhasil meraih Medali Emas untuk bidang Fisika Terapan.</p>
-      
-      <p>Kompetisi bergengsi tahunan ini diikuti oleh ribuan peserta dari seluruh provinsi di Indonesia. Persaingan yang sangat ketat tidak menyurutkan semangat tim perwakilan kita. Setelah melalui babak penyisihan, semifinal yang menguras tenaga, hingga babak final yang menegangkan, siswa kita membuktikan kualitas dan kedalaman pemahaman materi sains mereka.</p>
-      
-      <p><strong>Dedikasi dan Persiapan Matang</strong></p>
-      <p>Keberhasilan ini tentunya bukan diraih dalam semalam. Persiapan intensif telah dilakukan sejak enam bulan lalu di bawah bimbingan guru-guru ahli. Program karantina khusus, simulasi ujian, hingga dukungan penuh dari pihak sekolah dan orang tua menjadi pilar utama kesuksesan ini.</p>
-      
-      <blockquote>
-        "Ini adalah bukti nyata bahwa dengan tekad yang kuat, fasilitas laboratorium yang memadai, dan sistem pengajaran yang tepat, anak-anak kita mampu bersaing di level tertinggi," ujar Bapak Kepala Sekolah saat menyambut kedatangan tim juara.
-      </blockquote>
-      
-      <p>Kami berharap pencapaian luar biasa ini dapat menjadi motivasi dan inspirasi bagi seluruh siswa lainnya untuk terus menggali potensi diri, tidak mudah menyerah, dan berani bermimpi besar. Sekolah akan terus berkomitmen menyediakan wadah terbaik bagi pengembangan bakat akademik maupun non-akademik siswa.</p>
-    `
-  };
-};
+export const dynamic = 'force-dynamic';
 
-export default function DetailBeritaPage({ params }: { params: { slug: string } }) {
-  const berita = getBeritaBySlug(params.slug);
+export default async function DetailBeritaPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const berita = await prisma.berita.findUnique({
+    where: { slug: resolvedParams.slug, status: 'PUBLISHED' }
+  });
+
+  if (!berita) {
+    notFound();
+  }
 
   return (
     <>
@@ -68,28 +53,26 @@ export default function DetailBeritaPage({ params }: { params: { slug: string } 
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>{berita.date}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>{berita.readTime}</span>
+                <span>{new Date(berita.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
               </div>
             </div>
           </header>
 
           {/* Gambar Hero */}
-          <div className="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-12 shadow-lg">
-            <img 
-              src={berita.image} 
-              alt={berita.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {berita.imageUrl && (
+            <div className="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-12 shadow-lg bg-slate-200 flex items-center justify-center">
+              <img 
+                src={berita.imageUrl} 
+                alt={berita.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
           {/* Isi Konten */}
           <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-100 mb-12">
             <div 
-              className="prose prose-slate prose-lg md:prose-xl max-w-none prose-headings:text-slate-900 prose-a:text-emerald-600 prose-img:rounded-xl"
+              className="prose prose-slate prose-lg md:prose-xl max-w-none prose-headings:text-slate-900 prose-a:text-emerald-600 prose-img:rounded-xl whitespace-pre-wrap"
               dangerouslySetInnerHTML={{ __html: berita.content }}
             />
           </div>

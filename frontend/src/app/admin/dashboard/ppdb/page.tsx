@@ -1,7 +1,14 @@
 import React from 'react';
 import PPDBPanel from '@/components/admin/ppdb/PPDBPanel';
+import { getUserFromToken } from '@/utils/auth-util';
+import AccessDenied from '@/components/admin/AccessDenied';
 
-export default function PPDBPage() {
+export default async function PPDBPage() {
+  const user = await getUserFromToken();
+
+  if (user?.role === 'AdminHumas') {
+    return <AccessDenied message="Data pendaftar PPDB bersifat rahasia. Hanya Super Admin dan Admin PPDB yang memiliki akses." />;
+  }
   return (
     <div className="space-y-6">
       {/* Header */}

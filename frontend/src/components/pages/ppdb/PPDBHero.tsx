@@ -1,13 +1,24 @@
 "use client";
 
+import useSWR from 'swr';
 import Link from "next/link";
 
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
 export default function PPDBHero() {
+  const { data: jalurRes } = useSWR('/api/v1/ppdb-setting?section=jalur', fetcher);
+  const { data: jadwalRes } = useSWR('/api/v1/ppdb-setting?section=jadwal', fetcher);
+  const { data: persyaratanRes } = useSWR('/api/v1/ppdb-setting?section=persyaratan', fetcher);
+
+  const jalurCount = jalurRes?.data?.length || 0;
+  const wavesCount = jadwalRes?.data?.waves?.length || 0;
+  const jenjangCount = persyaratanRes?.data?.length || 0;
+
   const quickStats = [
-    { label: "Gelombang Aktif", value: "Gelombang 2" },
+    { label: "Gelombang", value: `${wavesCount} Gelombang` },
+    { label: "Jalur Tersedia", value: `${jalurCount} Pilihan` },
+    { label: "Jenjang", value: `${jenjangCount} Jenjang` },
     { label: "Tahun Ajaran", value: "2027 / 2028" },
-    { label: "Sisa Kuota", value: "35 Kursi" },
-    { label: "Jalur Tersedia", value: "4 Pilihan" },
   ];
 
   return (

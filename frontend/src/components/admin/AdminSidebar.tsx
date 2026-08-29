@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Newspaper, 
@@ -11,21 +11,49 @@ import {
   GraduationCap, 
   MessageSquare, 
   Users, 
-  LogOut 
+  LogOut,
+  ClipboardList
 } from 'lucide-react';
 
 const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
-  { name: 'Berita & Info', icon: Newspaper, href: '/admin/dashboard/berita' },
-  { name: 'Data Prestasi', icon: Trophy, href: '/admin/dashboard/prestasi' },
-  { name: 'Fasilitas', icon: Building2, href: '/admin/dashboard/fasilitas' },
-  { name: 'PPDB', icon: GraduationCap, href: '/admin/dashboard/ppdb' },
-  { name: 'Pesan Masuk', icon: MessageSquare, href: '/admin/dashboard/pesan' },
-  { name: 'Pengguna', icon: Users, href: '/admin/dashboard/pengguna' },
+  { name: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard', allowedRoles: ['SuperAdmin', 'AdminHumas', 'AdminPPDB'] },
+  { name: 'Berita & Info', icon: Newspaper, href: '/admin/dashboard/berita', allowedRoles: ['SuperAdmin', 'AdminHumas'] },
+  { name: 'Data Prestasi', icon: Trophy, href: '/admin/dashboard/prestasi', allowedRoles: ['SuperAdmin', 'AdminHumas'] },
+  { name: 'Fasilitas', icon: Building2, href: '/admin/dashboard/fasilitas', allowedRoles: ['SuperAdmin', 'AdminHumas'] },
+  { name: 'Info PPDB', icon: GraduationCap, href: '/admin/dashboard/ppdb', allowedRoles: ['SuperAdmin', 'AdminPPDB'] },
+  { name: 'Data Pendaftar', icon: ClipboardList, href: '/admin/dashboard/pendaftar', allowedRoles: ['SuperAdmin', 'AdminPPDB'] },
+  { name: 'Pesan Masuk', icon: MessageSquare, href: '/admin/dashboard/pesan', allowedRoles: ['SuperAdmin', 'AdminHumas'] },
+  { name: 'Pengguna', icon: Users, href: '/admin/dashboard/pengguna', allowedRoles: ['SuperAdmin'] },
 ];
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  role?: string;
+}
+
+export default function AdminSidebar({ role }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      const res = await fetch('/api/v1/auth/logout', { method: 'POST' });
+      
+      if (res.ok) {
+        // Menggunakan router.push atau window.location
+        // window.location mereload page seutuhnya untuk menghapus state lama
+        window.location.href = '/admin/login';
+      } else {
+        console.error('Gagal logout');
+        setIsLoggingOut(false);
+      }
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error);
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col min-h-screen fixed left-0 top-0">
       {/* Logo Area */}
@@ -44,7 +72,7 @@ export default function AdminSidebar() {
           Menu Utama
         </div>
         
-        {menuItems.map((item) => {
+        {menuItems.filter(item => !role || item.allowedRoles.includes(role)).map((item) => {
           const Icon = item.icon;
           // Deteksi menu aktif dinamis
           const isActive = 
@@ -71,13 +99,14 @@ export default function AdminSidebar() {
 
       {/* Bottom Area / Logout */}
       <div className="p-4 border-t border-slate-200">
-        <Link 
-          href="/admin/login"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors w-full"
+        <button 
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors w-full disabled:opacity-50"
         >
           <LogOut className="w-5 h-5" />
-          Keluar (Logout)
-        </Link>
+          {isLoggingOut ? 'Keluar...' : 'Keluar (Logout)'}
+        </button>
       </div>
     </aside>
   );

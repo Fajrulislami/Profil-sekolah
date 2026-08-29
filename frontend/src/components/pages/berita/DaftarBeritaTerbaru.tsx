@@ -1,87 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface BeritaItem {
   id: number;
   title: string;
+  slug: string;
   excerpt: string;
-  category: "Kegiatan" | "Prestasi" | "Informasi" | "Pengumuman";
-  date: string;
+  category: string;
   author: string;
-  imageUrl: string;
-  readTime: string;
+  imageUrl: string | null;
+  createdAt: string;
 }
 
 export default function DaftarBeritaTerbaru() {
   const [selectedCategory, setSelectedCategory] = useState<string>("Semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [displayCount, setDisplayCount] = useState<number>(6);
 
-  const categories = ["Semua", "Kegiatan", "Prestasi", "Informasi", "Pengumuman"];
+  const [newsList, setNewsList] = useState<BeritaItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const newsList: BeritaItem[] = [
-    {
-      id: 4,
-      title: "Kegiatan Pesantren Kilat Ramadhan 1447 H Berjalan Khidmat",
-      excerpt: "Rangkaian kegiatan pembinaan karakter dan keislaman siswa melalui Pesantren Kilat resmi ditutup dengan penyaluran zakat dan santunan anak yatim.",
-      category: "Kegiatan",
-      date: "12 Agustus 2026",
-      author: "Kesiswaan",
-      readTime: "4 min baca",
-      imageUrl: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1470&auto=format&fit=crop",
-    },
-    {
-      id: 5,
-      title: "Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2027/2028 Resmi Dibuka",
-      excerpt: "Informasi lengkap jadwal, alur pendaftaran, dan persyaratan beasiswa untuk calon santri dan siswa baru semua jenjang pendidikan.",
-      category: "Informasi",
-      date: "05 Agustus 2026",
-      author: "Panitia PPDB",
-      readTime: "6 min baca",
-      imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1470&auto=format&fit=crop",
-    },
-    {
-      id: 6,
-      title: "Juara 1 Lomba Robotika Nasional di Institut Teknologi Bandung",
-      excerpt: "Tim Robotika sekolah menciptakan inovasi robot pemilah sampah berbasis IoT dan berhasil mengalahkan puluhan finalis dari seluruh Indonesia.",
-      category: "Prestasi",
-      date: "28 Juli 2026",
-      author: "Ekstrakurikuler",
-      readTime: "5 min baca",
-      imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1470&auto=format&fit=crop",
-    },
-    {
-      id: 7,
-      title: "Pengumuman Pembagian Raport Semester Genap dan Libur Akhir Tahun",
-      excerpt: "Pemberitahuan resmi mengenai jadwal pengambilan evaluasi belajar siswa serta himbauan kegiatan positif selama libur sekolah.",
-      category: "Pengumuman",
-      date: "20 Juli 2026",
-      author: "Kurikulum",
-      readTime: "3 min baca",
-      imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1470&auto=format&fit=crop",
-    },
-    {
-      id: 8,
-      title: "Kunjungan Edukasi dan Field Trip Budaya ke Museum Nasional",
-      excerpt: "Siswa-siswi jenjang menengah melakukan studi lapangan untuk mempelajari artefak bersejarah dan memperdalam wawasan kebudayaan nusantara.",
-      category: "Kegiatan",
-      date: "14 Juli 2026",
-      author: "Humas",
-      readTime: "4 min baca",
-      imageUrl: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1470&auto=format&fit=crop",
-    },
-    {
-      id: 9,
-      title: "Pelatihan Digital Literacy & Cyber Safety untuk Orang Tua Siswa",
-      excerpt: "Komite sekolah menyelenggarakan workshop pengawasan penggunaan gadget dan media sosial bagi anak di era serba digital.",
-      category: "Informasi",
-      date: "02 Juli 2026",
-      author: "Komite Sekolah",
-      readTime: "5 min baca",
-      imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1470&auto=format&fit=crop",
-    },
-  ];
+  const categories = ["Semua", "Kegiatan", "Prestasi", "Informasi Umum", "Pengumuman Penting"];
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await fetch('/api/v1/berita?type=published');
+        if (response.ok) {
+          const data = await response.json();
+          setNewsList(data);
+        }
+      } catch (error) {
+        console.error("Gagal memuat berita:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
 
   const filteredNews = newsList.filter((item) => {
     const matchesCategory = selectedCategory === "Semua" || item.category === selectedCategory;
@@ -89,6 +48,8 @@ export default function DaftarBeritaTerbaru() {
                           item.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const displayedNews = filteredNews.slice(0, displayCount);
 
   return (
     <section className="relative w-full py-24 bg-slate-50 font-sans border-t border-slate-200/80 overflow-hidden">
@@ -125,7 +86,10 @@ export default function DaftarBeritaTerbaru() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setDisplayCount(6); // Reset limit when filter changes
+                }}
                 className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-300 ${
                   selectedCategory === cat
                     ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
@@ -167,19 +131,38 @@ export default function DaftarBeritaTerbaru() {
         </div>
 
         {/* DAFTAR KARTU BERITA */}
-        {filteredNews.length > 0 ? (
+        {isLoading ? (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {Array.from({ length: 6 }).map((_, idx) => (
+      <div key={idx} className="bg-[#121B2D] rounded-2xl border border-slate-800 overflow-hidden flex flex-col animate-pulse">
+        <div className="relative h-52 w-full bg-slate-700" />
+        <div className="p-6 flex-1 flex flex-col space-y-3">
+          <div className="h-4 w-3/4 bg-slate-600 rounded" />
+          <div className="h-3 w-1/2 bg-slate-600 rounded" />
+          <div className="h-3 w-full bg-slate-600 rounded" />
+          <div className="h-3 w-2/3 bg-slate-600 rounded" />
+        </div>
+      </div>
+    ))}
+  </div>
+) : filteredNews.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {filteredNews.map((news) => (
+            {displayedNews.map((news) => (
               <article
                 key={news.id}
                 className="group flex flex-col bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:border-emerald-300 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500"
               >
-                <div className="relative w-full h-52 overflow-hidden bg-slate-100">
-                  <img
-                    src={news.imageUrl}
-                    alt={news.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
+                <div className="relative w-full h-52 overflow-hidden bg-slate-100 flex items-center justify-center">
+                  {news.imageUrl ? (
+                    <img
+                      src={news.imageUrl}
+                      alt={news.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                  ) : (
+                    <span className="text-slate-400">Tanpa Gambar</span>
+                  )}
                   <span className="absolute top-4 left-4 px-3 py-1 rounded-lg bg-white/90 backdrop-blur-md border border-emerald-200 text-emerald-800 text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
                     {news.category}
                   </span>
@@ -191,10 +174,8 @@ export default function DaftarBeritaTerbaru() {
                       <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      <span>{news.date}</span>
+                      <span>{new Date(news.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                     </div>
-                    <span>•</span>
-                    <span>{news.readTime}</span>
                   </div>
 
                   <h3 className="text-xl font-black text-slate-900 leading-snug mb-3 group-hover:text-emerald-600 transition-colors duration-300 line-clamp-2">
@@ -210,7 +191,7 @@ export default function DaftarBeritaTerbaru() {
                       Oleh: {news.author}
                     </span>
                     <Link
-                      href={`/berita/${news.id}`}
+                      href={`/berita/${news.slug}`}
                       className="text-sm font-extrabold text-emerald-600 hover:text-emerald-700 transition-colors"
                     >
                       Baca Artikel
@@ -228,11 +209,16 @@ export default function DaftarBeritaTerbaru() {
         )}
 
         {/* TOMBOL CTA */}
-        <div className="flex justify-center">
-          <button className="px-8 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base font-bold shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all duration-300 hover:-translate-y-0.5">
-            Tampilkan Lebih Banyak
-          </button>
-        </div>
+        {filteredNews.length > displayCount && (
+          <div className="flex justify-center">
+            <button 
+              onClick={() => setDisplayCount(prev => prev + 6)}
+              className="px-8 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base font-bold shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all duration-300 hover:-translate-y-0.5"
+            >
+              Tampilkan Lebih Banyak
+            </button>
+          </div>
+        )}
 
       </div>
     </section>

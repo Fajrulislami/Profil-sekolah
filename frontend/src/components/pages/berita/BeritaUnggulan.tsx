@@ -1,39 +1,66 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function BeritaUnggulan() {
-  const featuredNews = [
-    {
-      id: 1,
-      title: "Prestasi Gemilang! Tim OSN Sekolah Madani Raih Medali Emas",
-      excerpt: "Kabar gembira datang dari ajang Olimpiade Sains Nasional (OSN) tahun ini. Tim perwakilan sekolah berhasil membawa pulang medali emas, membuktikan kualitas pembinaan kita.",
-      category: "Prestasi",
-      date: "24 Agustus 2026",
-      author: "Humas",
-      imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop",
-      isMain: true,
-    },
-    {
-      id: 2,
-      title: "Pendaftaran Beasiswa Tahfidz Gelombang 2",
-      category: "Informasi",
-      date: "20 Agustus 2026",
-      imageUrl: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1473&auto=format&fit=crop",
-      isMain: false,
-    },
-    {
-      id: 3,
-      title: "Seminar Pendidikan: Generasi Rabbani Era Digital",
-      category: "Kegiatan",
-      date: "15 Agustus 2026",
-      imageUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1470&auto=format&fit=crop",
-      isMain: false,
-    }
-  ];
+interface BeritaFeatured {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string;
+  category: string;
+  author: string;
+  imageUrl: string | null;
+  createdAt: string;
+}
 
-  const mainNews = featuredNews.find(news => news.isMain);
-  const sideNews = featuredNews.filter(news => !news.isMain);
+export default function BeritaUnggulan() {
+  const [featuredNews, setFeaturedNews] = useState<BeritaFeatured[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const response = await fetch('/api/v1/berita?type=featured');
+        if (response.ok) {
+          const data = await response.json();
+          setFeaturedNews(data);
+        }
+      } catch (error) {
+        console.error("Gagal memuat berita unggulan:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeatured();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <section className="relative w-full py-24 bg-slate-950 font-sans border-t border-slate-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <p className="text-amber-500 font-bold">Memuat Berita Unggulan...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (featuredNews.length === 0) {
+    return (
+      <section className="relative w-full py-24 bg-slate-950 font-sans border-t border-slate-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col items-center text-center">
+            <h2 className="text-3xl font-bold text-slate-300 mb-4">Berita Unggulan</h2>
+            <p className="text-slate-500">Belum ada berita unggulan saat ini.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const mainNews = featuredNews[0];
+  const sideNews = featuredNews.slice(1, 4); // Ambil maksimal 3 untuk di samping (Total 4)
 
   return (
     <section className="relative w-full py-24 bg-slate-950 font-sans border-t border-slate-900 overflow-hidden">
@@ -69,11 +96,17 @@ export default function BeritaUnggulan() {
           {mainNews && (
             <div className="w-full lg:w-[60%] h-[500px] lg:h-full relative group rounded-3xl overflow-hidden shadow-2xl">
               {/* Gambar Background */}
-              <img 
-                src={mainNews.imageUrl} 
-                alt={mainNews.title} 
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
-              />
+              {mainNews.imageUrl ? (
+                <img 
+                  src={mainNews.imageUrl} 
+                  alt={mainNews.title} 
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+                />
+              ) : (
+                <div className="absolute inset-0 w-full h-full bg-slate-800 flex items-center justify-center">
+                  <span className="text-slate-500 font-medium">Gambar Tidak Ditemukan</span>
+                </div>
+              )}
               
               {/* Overlay Gradasi Ekstra Gelap (Tinggi dari bawah ke atas) */}
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent pointer-events-none" />
@@ -97,12 +130,12 @@ export default function BeritaUnggulan() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span>{mainNews.date}</span>
+                    <span>{new Date(mainNews.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                   </div>
                   
                   {/* CTA Tanpa Panah Sesuai Aturan */}
                   <Link 
-                    href={`/berita/${mainNews.id}`}
+                    href={`/berita/${mainNews.slug}`}
                     className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-all duration-300 hover:shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:-translate-y-1"
                   >
                     Baca Selengkapnya
@@ -121,12 +154,18 @@ export default function BeritaUnggulan() {
                 className="flex-1 group flex flex-row rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-slate-800/50 hover:bg-slate-800/60 hover:border-amber-500/30 transition-all duration-500 overflow-hidden"
               >
                 {/* Gambar (Rasio Kiri) */}
-                <div className="w-2/5 sm:w-[45%] h-full relative overflow-hidden shrink-0">
-                  <img 
-                    src={news.imageUrl} 
-                    alt={news.title} 
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
-                  />
+                <div className="w-2/5 sm:w-[45%] h-full relative overflow-hidden shrink-0 bg-slate-800">
+                  {news.imageUrl ? (
+                    <img 
+                      src={news.imageUrl} 
+                      alt={news.title} 
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-center p-2">
+                      <span className="text-slate-500 text-xs font-medium leading-tight">Gambar Tidak Ditemukan</span>
+                    </div>
+                  )}
                   {/* Overlay tipis pada gambar */}
                   <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
@@ -143,9 +182,9 @@ export default function BeritaUnggulan() {
                   
                   {/* CTA Text Only Sesuai Aturan */}
                   <div className="mt-auto flex items-center justify-between">
-                     <span className="text-xs text-slate-400 font-medium">{news.date}</span>
+                     <span className="text-xs text-slate-400 font-medium">{new Date(news.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                      <Link 
-                        href={`/berita/${news.id}`}
+                        href={`/berita/${news.slug}`}
                         className="text-sm font-bold text-amber-500 hover:text-amber-300 transition-colors"
                       >
                         Baca Artikel
