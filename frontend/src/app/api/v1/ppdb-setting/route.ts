@@ -45,7 +45,7 @@ export async function PUT(request: NextRequest) {
     } catch (validationError: any) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { error: 'Validasi gagal', details: validationError.errors },
+          { error: 'Validasi gagal', details: (validationError as any).errors || (validationError as any).issues },
           { status: 400 }
         );
       }
