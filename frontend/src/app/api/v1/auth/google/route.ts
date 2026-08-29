@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 const client = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-change-in-production';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
