@@ -10,7 +10,7 @@ export type Fasilitas = {
   pengguna: string;
   status: string;
   category: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

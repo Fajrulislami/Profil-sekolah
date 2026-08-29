@@ -94,7 +94,7 @@ export default function PPDBJalur() {
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                     Keuntungan yang Didapat:
                   </span>
-                  {track.points.map((pt, i) => (
+                  {track.points.map((pt: any, i: number) => (
                     <div key={i} className="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-slate-200">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shrink-0">
                         ✓

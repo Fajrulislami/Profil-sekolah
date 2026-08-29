@@ -146,7 +146,7 @@ export default function PPDBPersyaratan() {
                         <div>
                           <h4 className="text-sm font-black text-white mb-3">Dokumen yang perlu disiapkan:</h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            {item.docs.map((doc, i) => (
+                            {item.docs.map((doc: any, i: number) => (
                               <div
                                 key={i}
                                 className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/50 border border-slate-800 text-xs sm:text-sm text-slate-300 font-medium"
