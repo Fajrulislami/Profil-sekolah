@@ -58,7 +58,7 @@ export default function PPDBJadwalBiaya() {
 
         {/* 3 Gelombang Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {waves.map((w, idx) => (
+          {waves.map((w: any, idx: number) => (
             <div
               key={idx}
               className={`p-8 rounded-3xl bg-white border transition-all duration-500 flex flex-col justify-between ${
@@ -103,7 +103,7 @@ export default function PPDBJadwalBiaya() {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {feeComponents.map((item, idx) => (
+            {feeComponents.map((item: any, idx: number) => (
               <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/60 flex items-start gap-3">
                 <div className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                   ✓
