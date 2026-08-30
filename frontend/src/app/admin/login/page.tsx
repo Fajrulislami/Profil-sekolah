@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { Mail, Lock, LogIn, AlertCircle, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -29,14 +31,16 @@ export default function AdminLoginPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Redirect ke dashboard
-        router.push('/admin/dashboard');
+        setIsSuccess(true);
+        setTimeout(() => {
+          router.push('/admin/dashboard');
+        }, 1000);
       } else {
         setError(data.message || 'Gagal masuk. Periksa email dan sandi Anda.');
+        setIsLoading(false);
       }
     } catch (err) {
       setError('Terjadi kesalahan pada jaringan atau server.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -57,13 +61,16 @@ export default function AdminLoginPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        router.push('/admin/dashboard');
+        setIsSuccess(true);
+        setTimeout(() => {
+          router.push('/admin/dashboard');
+        }, 1000);
       } else {
         setError(data.message || 'Gagal masuk dengan Google.');
+        setIsLoading(false);
       }
     } catch (err) {
       setError('Terjadi kesalahan pada jaringan saat autentikasi Google.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -89,10 +96,18 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Notifikasi Error */}
-        {error && (
-          <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-lg flex items-start gap-3">
+        {error && !isSuccess && (
+          <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
             <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
             <p className="text-sm text-rose-600">{error}</p>
+          </div>
+        )}
+
+        {/* Notifikasi Sukses */}
+        {isSuccess && (
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+            <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-emerald-600 font-medium">Login berhasil! Mengalihkan...</p>
           </div>
         )}
 
@@ -132,7 +147,7 @@ export default function AdminLoginPage() {
                 placeholder="admin@sekolahmadani.sch.id"
                 className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSuccess}
               />
             </div>
           </div>
@@ -156,24 +171,41 @@ export default function AdminLoginPage() {
               </div>
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                className="block w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 required
-                disabled={isLoading}
+                disabled={isLoading || isSuccess}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-emerald-600 transition-colors focus:outline-none"
+                disabled={isLoading || isSuccess}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
             </div>
           </div>
 
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg font-semibold transition-colors disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+            disabled={isLoading || isSuccess}
+            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold transition-all mt-2 ${
+              isSuccess 
+                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" 
+                : "bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-70 disabled:cursor-not-allowed"
+            }`}
           >
-            {isLoading ? (
+            {isLoading && !isSuccess ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : isSuccess ? (
+              <>
+                <CheckCircle className="w-5 h-5 animate-in zoom-in" />
+                Berhasil
+              </>
             ) : (
               <>
                 <LogIn className="w-5 h-5" />
